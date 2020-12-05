@@ -1,0 +1,1 @@
+-- Finite Borel measure μ: B(M) → [0,∞) of metric space (M,d)

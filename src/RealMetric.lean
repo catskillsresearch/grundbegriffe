@@ -1,0 +1,1 @@
+-- Real metric dR: ℝ × ℝ → [0,∞)

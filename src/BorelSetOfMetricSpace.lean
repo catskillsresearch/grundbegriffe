@@ -1,0 +1,1 @@
+-- Borel set X ∈ B(M) of metric space (M,d)

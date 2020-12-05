@@ -1,0 +1,1 @@
+-- Borel probability measure μ: B(M) → [0,1]

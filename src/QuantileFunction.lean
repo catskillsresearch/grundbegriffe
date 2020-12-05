@@ -1,0 +1,1 @@
+-- Quantile function T-:[0,1]→ ereal of function T:ℝ→ [0,1] maybe a/k/a inverse distribution function F^-X of distribution function F_X

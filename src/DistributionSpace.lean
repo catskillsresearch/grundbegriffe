@@ -1,0 +1,1 @@
+-- Distribution space (S,Σ ,μ_X )

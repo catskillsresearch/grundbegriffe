@@ -1,0 +1,1 @@
+-- Real distribution space (ℝ, B(ℝ), μ_x, F_X) from distribution μ_x on real-valued random variable on (Ω,A,P)

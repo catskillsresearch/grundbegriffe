@@ -1,0 +1,1 @@
+-- Sample space: inhabited set

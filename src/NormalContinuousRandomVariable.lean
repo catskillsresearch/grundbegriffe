@@ -1,0 +1,1 @@
+-- Normal continuous random variable
