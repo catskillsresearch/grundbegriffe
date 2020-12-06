@@ -1,5 +1,8 @@
--- Measure space (S,Σ,μ)
+import measure_theory.measurable_space
+import measure_theory.measure_space
 
+
+-- Measure space (S,Σ,μ)
 
 instance M1_MS : measure_space M1 :=
 { to_measurable_space := M1,
