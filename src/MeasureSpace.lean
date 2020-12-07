@@ -1,11 +1,29 @@
-import measure_theory.measurable_space
 import measure_theory.measure_space
 import Measure
 
-#check M
+open measure_theory
 
 -- Measure space (S,Σ,μ)
 
-instance M1_MS : measure_space M :=
-{ to_measurable_space := M,
-  volume := M_measure }
+-- Example 1
+
+#check M1
+#check μ_M1
+#check measure_space
+
+noncomputable def M1_MS : measure_space X := {
+  to_measurable_space := M1,
+  volume := μ_M1 }
+
+#check M1_MS -- M1_MS : measure_space X
+
+#check M1_MS
+
+-- Example 2
+
+#check M2
+#check μ_M2
+
+noncomputable def M2_MS : measure_space X := {
+  to_measurable_space := M2,
+  volume := μ_M2 }
