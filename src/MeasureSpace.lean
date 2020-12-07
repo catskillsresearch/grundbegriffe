@@ -17,8 +17,6 @@ noncomputable def M1_MS : measure_space X := {
 
 #check M1_MS -- M1_MS : measure_space X
 
-#check M1_MS
-
 -- Example 2
 
 #check M2
@@ -27,3 +25,5 @@ noncomputable def M1_MS : measure_space X := {
 noncomputable def M2_MS : measure_space X := {
   to_measurable_space := M2,
   volume := μ_M2 }
+
+#check M2_MS -- M2_MS : measure_space X
