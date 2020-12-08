@@ -1,6 +1,8 @@
--- Metric space
-
+import data.real.basic
+import topology.metric_space.basic
 import Metric
+
+-- Metric space
 
 -- Example 1
 
@@ -22,10 +24,9 @@ noncomputable def MES_L2 : metric_space ℝ :=
   dist_comm := sorry,
   dist_triangle := sorry }
 
--- Example 3
+#check MES_L2 -- MES_L2 : metric_space ℝ
 
-#check RealPoint
-#check d_taxicab -- d_taxicab : metric RealPoint
+-- Example 3
 
 noncomputable def MES_taxicab : metric_space RealPoint :=
 { dist := d_taxicab,
@@ -34,13 +35,15 @@ noncomputable def MES_taxicab : metric_space RealPoint :=
   dist_comm := sorry,
   dist_triangle := sorry }
 
+#check MES_taxicab -- MES_taxicab : metric_space RealPoint
+
 -- Example 4
 
-#check d_euclid
-
-noncomputable def MES_euclid : metric_space RealPoint :=
+noncomputable def MES_euclid: metric_space RealPoint :=
 { dist := d_euclid,
   dist_self := sorry,
   eq_of_dist_eq_zero := sorry,
   dist_comm := sorry,
   dist_triangle := sorry }
+
+#check MES_euclid -- MES_taxicab : metric_space RealPoint
