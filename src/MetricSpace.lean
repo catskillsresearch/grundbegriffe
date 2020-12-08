@@ -11,6 +11,8 @@ noncomputable def MES_L1 : metric_space ℝ :=
   dist_comm := sorry,
   dist_triangle := sorry }
 
+#check MES_L1 -- MES_L1 : metric_space ℝ
+
 -- Example 2
 
 noncomputable def MES_L2 : metric_space ℝ :=
