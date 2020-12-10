@@ -1,9 +1,4 @@
--- Probability measure p: Σ → [0,1]
-
 import measure_theory.measure_space
-import measure_theory.lebesgue_measure
-import measure_theory.borel_space
-import data.set.intervals.basic
 
 instance inhabitant : fintype (fin 1) := fin.fintype 1
 
@@ -26,13 +21,3 @@ noncomputable def μ : @measure_theory.measure (fin 1) M :=
     simp,
     sorry
   end)
-
-def P : (@measure_theory.probability_measure (fin 1) M μ) := 
-{ measure_univ := sorry }
-
-#check P
-#check M
-#check real.measurable_space
-#check real.borel_space
-instance B01 : borel_space ℝ := ⟨rfl⟩
-#check B01
