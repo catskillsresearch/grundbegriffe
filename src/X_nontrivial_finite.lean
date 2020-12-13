@@ -3,3 +3,9 @@ import data.finset.basic
 def X := fin 3
 instance X_nontrivial : nontrivial X := fin.nontrivial
 #check X_nontrivial --X_nontrivial : nontrivial X
+
+instance : nontrivial (set X) :=
+begin
+  unfold X, 
+  apply_instance
+end
