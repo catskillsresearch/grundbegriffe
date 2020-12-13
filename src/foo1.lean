@@ -1,22 +1,9 @@
-import measure_theory.lebesgue_measure
-import measure_theory.borel_space
-import data.set.intervals.basic
-import measure_theory.measure_space
+import algebra.group.defs
+import data.finset.basic
+import data.nat.basic
 
-open measure_theory
+instance X_is_nontrivial : nontrivial (fin 3) := fin.nontrivial
+#check X_is_nontrivial --X_is_nontrivial : nontrivial X
 
-noncomputable theory
-
-def I : Type* := set.Icc (0 : ℝ) 1
-instance foo0 : topological_space I := by {unfold I, apply_instance}
-instance foo1 : measurable_space I := borel I
-instance foo2 : borel_space I := ⟨rfl⟩
-#check foo2
-
-def B01 : borel_space I := by apply_instance -- now it works.
-#check B01
-
-def μ := measure_theory.real.measure_space.volume
-#check μ -- μ : measure_theory.measure ℝ
-
-#check probability_measure μ
+instance X_has_add : has_add (fin 3):= fin.has_add
+#check X_has_add -- X_has_add : has_add X
