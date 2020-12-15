@@ -18,3 +18,5 @@ set_option trace.class_instances true
 #check (by apply_instance : mul_zero_class ℕ)
 
 end version_2
+
+
