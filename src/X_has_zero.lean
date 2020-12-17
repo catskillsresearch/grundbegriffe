@@ -16,3 +16,4 @@ def X := fin 3
 instance : has_zero X := fin.has_zero
 instance : has_zero (set X) := ⟨ ∅ ⟩ 
 end finite_zero_example_set_fin3
+semigroup

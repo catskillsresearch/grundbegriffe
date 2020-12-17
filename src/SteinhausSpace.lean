@@ -1,4 +1,8 @@
 import measure_theory.lebesgue_measure
+import data.real.basic
+import topology.metric_space.basic
+import Metric
+
 open measure_theory
 noncomputable theory
 
@@ -12,6 +16,14 @@ measure.comap_apply _ subtype.coe_injective (λ _, is_measurable.subtype_image h
 
 class probability_space (α : Type*) extends measure_space α :=
 (is_probability_measure:  probability_measure volume)
+
+class random_variable (α β : Type*) := 
+(experiment : α → β )
+(is_probability_space : probability_space α)
+(is_metric_space : metric_space β)
+(generalized_inverse : set β → set α := λ E : set β, {x : α // (experiment x) ∈ E})
+(distribution : λ E : set β, is_probability_space.volume (c.generalized_inverse E))
+(distribution_function : λ E : set β )
 
 instance Steinhaus_measure : probability_measure (volume : measure (set.Icc (0 : ℝ) 1)) :=
 { measure_univ := begin
