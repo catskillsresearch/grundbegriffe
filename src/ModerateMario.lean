@@ -58,13 +58,16 @@ instance : has_coe_to_fun (random_variable α β) := ⟨_,outcome⟩
 variable (X : random_variable α β)
 lemma measurable : measurable X := X.is_measurable_outcome
 
+-- distribution of X
 def induced (X : random_variable α β) : probability_space β :=
 { volume := measure.map X volume,
   is_probability_measure := X.measurable.map_probability_measure }
 
 variables [preorder β]
 
-def CDF (x : β) : ℝ := @probability_space.prob _ X.induced {c | c ≤ x}
+-- distribution function of X
+def CDF (x : β) : 
+  ℝ := @probability_space.prob _ X.induced {c | c ≤ x}
 
 lemma prob_eq_CDF (x : β) : X.CDF x = @probability_space.prob β X.induced {c | c ≤ x} := rfl
 
@@ -80,17 +83,7 @@ begin
   exact (@probability_space.prob_le_one β X.induced {c : β | c ≤ x}),
 end
 
-/- lemma factoid [preorder β] (x y : β ) (h : x ≤ y) : {c : β | c ≤ x} ⊆ {c : β | c ≤ y} := 
-  set.Iic_subset_Iic.mpr h -/
-
-/- theorem CDF_mono {x y : β} (h : x ≤ y) : X.CDF x ≤ X.CDF y := 
-begin
-  repeat { rw prob_eq_CDF },
-  have h1 := factoid x y h,
-  have h2 := @probability_space.prob_mono β X.induced {c : β | c ≤ x} {c : β | c ≤ y},
-  exact h2 h1,
-end -/
-
+-- distribution function of X with codomain correctly restricted to [0,1]
 def CDF_in_01 (x: β) : set.Icc (0 : ℝ) 1 := ⟨ X.CDF x, X.zero_le_CDF x, X.CDF_le_one x⟩
 
 variables [topological_space β] [order_closed_topology β] [opens_measurable_space β]
