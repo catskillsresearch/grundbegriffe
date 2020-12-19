@@ -1,9 +1,15 @@
-import algebra.group.defs
-import data.finset.basic
-import data.nat.basic
 
-instance X_is_nontrivial : nontrivial (fin 3) := fin.nontrivial
-#check X_is_nontrivial --X_is_nontrivial : nontrivial X
+import measure_theory.lebesgue_measure
 
-instance X_has_add : has_add (fin 3):= fin.has_add
-#check X_has_add -- X_has_add : has_add X
+open measure_theory
+
+noncomputable theory
+
+class probability_space (α : Type*) extends measure_space α :=
+(is_probability_measure:  probability_measure volume)
+
+class random_variable (α β : Type*) :=
+(domain : probability_space α )
+(codomain : measurable_space β )
+(outcome : α → β)
+(is_measurable_outcome : @measurable α  β domain codomain outcome)

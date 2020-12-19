@@ -1,1 +1,0 @@
--- Exponential continuous random variable

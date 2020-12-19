@@ -1,1 +1,0 @@
--- Closed set X on a metric space

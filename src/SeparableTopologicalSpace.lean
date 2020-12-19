@@ -1,1 +1,0 @@
--- Separable topological space

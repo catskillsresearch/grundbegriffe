@@ -1,1 +1,0 @@
--- Borel σ-algebra B(ℝ)

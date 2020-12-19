@@ -1,1 +1,0 @@
--- Push-forward measure f(μ): T → [0,∞)

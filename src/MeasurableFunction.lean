@@ -1,1 +1,0 @@
--- Measurable function f

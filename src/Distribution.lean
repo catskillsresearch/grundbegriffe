@@ -1,2 +1,0 @@
--- Distribution μ_X : Σ → [0,1]
--- μ_V(E) = P(V^{-1}(E)) be the *distribution*

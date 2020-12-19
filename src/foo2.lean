@@ -1,24 +1,51 @@
-import measure_theory.lebesgue_measure
-import measure_theory.borel_space
-import data.set.intervals.basic
-import measure_theory.measure_space
+import data.nat.fib
+import category_theory.functor
+import category_theory.limits.limits
+import category_theory.limits.lattice
+import data.finset.gcd
+import data.set.finite
+import tactic
+open category_theory
 
-open measure_theory
+def mynat : Type := nat
+def to_nat : mynat → nat := id
+instance : has_dvd mynat :=
+{dvd := λ a b, to_nat a ∣ b}
 
+instance : semilattice_sup_bot mynat :=
+{ le := (∣),
+le_refl := λ a, dvd_refl a,
+le_trans := λ a b c h g, dvd_trans h g,
+bot := (1 : ℕ),
+sup := λ a b , nat.lcm a b,
+le_antisymm := λ a b, nat.dvd_antisymm,
+le_sup_left := nat.dvd_lcm_left,
+le_sup_right := nat.dvd_lcm_right,
+bot_le := λ (a:ℕ), ⟨a, (one_mul a).symm⟩,
+sup_le := λ a b c, nat.lcm_dvd,
+ }
+
+open_locale classical
 noncomputable theory
+instance : has_Sup mynat := ⟨
+  λ s, if h : s.finite 
+       then finset.sup (set.finite.to_finset h) id 
+       else (0: ℕ)⟩
 
-def I : Type* := set.Icc (0 : ℝ) 1
-instance foo0 : topological_space I := by {unfold I, apply_instance}
-instance foo1 : measurable_space I := borel I
-instance foo2 : borel_space I := ⟨rfl⟩
-#check foo2
+instance : complete_lattice mynat := 
+complete_lattice_of_Sup mynat  (λ s, sorry)
 
-def B01 : borel_space I := by apply_instance -- now it works.
-#check B01
+lemma fib_dvd_fib {m n : ℕ} (h : m ∣ n) : m.fib ∣ n.fib :=
+begin
+  sorry
+end
 
-def μ := measure_theory.real.measure_space.volume
-#check μ -- μ : measure_theory.measure ℝ
+def fib : mynat ⥤ mynat :=
+{ obj := nat.fib,
+  map := λ m n h, hom_of_le (fib_dvd_fib (le_of_hom h)),
+  map_id' := λ _, rfl,
+  map_comp' := λ a b c f g, by simp}
 
-#check probability_measure μ
+instance : category mynat := by apply_instance
 
-#check borel_space ℝ 
+instance : limits.has_finite_limits mynat := by apply_instance

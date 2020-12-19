@@ -1,1 +1,0 @@
--- Construction of i.i.d random sequences from individual numbers in ℝ

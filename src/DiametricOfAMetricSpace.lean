@@ -1,1 +1,0 @@
--- Diameter diam(X) for X ⊆ M of metric space (M,d)

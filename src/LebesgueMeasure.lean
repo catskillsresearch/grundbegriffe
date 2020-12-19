@@ -1,1 +1,0 @@
--- Lebesgue measure λ : L(ℝ) → [0,∞)

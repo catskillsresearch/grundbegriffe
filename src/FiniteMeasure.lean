@@ -1,1 +1,0 @@
--- Finite measure p: A→[0,∞)

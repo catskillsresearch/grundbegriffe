@@ -1,1 +1,0 @@
--- V^{-1}(E) = {x \in X: V(x) \in E} be the generalized inverse of V

@@ -1,1 +1,0 @@
--- Lebesgue outer measure λ⋆ : L(ℝ) → [0,∞)

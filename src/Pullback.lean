@@ -1,1 +1,0 @@
--- Pullback f⁻¹: Σ → A

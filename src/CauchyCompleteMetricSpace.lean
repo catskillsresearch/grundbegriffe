@@ -1,1 +1,0 @@
--- Cauchy-complete metric space
