@@ -66,10 +66,6 @@ variables [preorder β]
 
 def CDF (x : β) : ℝ := @probability_space.prob _ X.induced {c | c ≤ x}
 
-variables [topological_space β] [order_closed_topology β] [opens_measurable_space β]
-
-example (b : β) : is_measurable {c | c ≤ b} := is_closed.is_measurable is_closed_Iic
-
 lemma prob_eq_CDF (x : β) : X.CDF x = @probability_space.prob β X.induced {c | c ≤ x} := rfl
 
 theorem zero_le_CDF (x : β) : 0 ≤ X.CDF x := 
@@ -84,17 +80,19 @@ begin
   exact (@probability_space.prob_le_one β X.induced {c : β | c ≤ x}),
 end
 
-lemma factoid (x y : β ): {c : β | c ≤ x} ⊆ {c : β | c ≤ y} := 
-begin
-  sorry
-end
+lemma factoid [preorder β] (x y : β ) (h : x ≤ y) : {c : β | c ≤ x} ⊆ {c : β | c ≤ y} := 
+  set.Iic_subset_Iic.mpr h
 
 theorem CDF_mono {x y : β} (h : x ≤ y) : X.CDF x ≤ X.CDF y := 
 begin
   repeat { rw prob_eq_CDF },
-  -- introduce hp: factoid(x y)
-  -- apply @probability_space.prob_mono β X.induced {c : β | c ≤ x} {c : β | c ≤ y}  to hp
-  sorry
+  have h1 := factoid x y h,
+  have h2 := @probability_space.prob_mono β X.induced {c : β | c ≤ x} {c : β | c ≤ y},
+  exact h2 h1,
 end
+
+variables [topological_space β] [order_closed_topology β] [opens_measurable_space β]
+
+example (b : β) : is_measurable {c | c ≤ b} := is_closed.is_measurable is_closed_Iic
 
 end random_variable
