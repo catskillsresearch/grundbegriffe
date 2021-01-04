@@ -347,11 +347,54 @@ begin
   exact_mod_cast nat.prime.irrational_sqrt (by norm_num : nat.prime 5),
 end
 
-def ab54root := {x : ℝ // ∃ (a b : ℤ), x = a + b*5^(1/4)}
-def ab94root := {x : ℝ // ∃ (a b : ℤ), x = a + b*9^(1/4)}
-def binrat := {x : ℚ // ∃ (p : ℕ), x.denom = 2 ^ p }
+theorem ex6e : ∃ s : subring ℝ, ∀ x : ℝ, x ∈ s ↔ ∃ a b : ℤ, x = a + b * 9 ^ (1/4:ℝ) :=
+begin
+  apply exists.intro,
+  intro x,
+  split,
+  {
+    intro h1,
+    apply exists.intro,
+    apply exists.intro,
+    sorry,
+    exact int.one,
+    exact int.one,
+  },
+  {
+    intro h1,
+    cases h1 with a ha,
+    cases ha with b hb,
+    refine (subring.mem_mk' _ _).mpr rfl,
+    rotate,
+    rotate,
+    exact is_unit.submonoid ℝ,
+    exact add_subgroup.center ℝ,
+    rotate,
+    rotate,
+    sorry,
+    sorry,
+    sorry,
+    sorry,
+  },
+end
 
-
+theorem ex6f : ∃ s : subring ℚ, ∀ x : ℚ, x ∈ s ↔ ∃ n : ℕ, x.denom = 2 ^ n :=
+begin
+  apply exists.intro,
+  intro h,
+  split,
+  {
+    intro h1,
+    apply exists.intro,
+    sorry,
+    sorry,
+  },
+  {
+    intro h1,
+    cases h1 with n hn,
+    exact subring.mem_top h,
+  },
+end
 
 end ch1B
 
