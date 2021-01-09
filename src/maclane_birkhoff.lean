@@ -347,35 +347,211 @@ begin
   exact_mod_cast nat.prime.irrational_sqrt (by norm_num : nat.prime 5),
 end
 
-theorem ex6e : ∃ s : subring ℝ, ∀ x : ℝ, x ∈ s ↔ ∃ a b : ℤ, x = a + b * 9 ^ (1/4:ℝ) :=
+/- Set s is closed under addition and multiplication, so if
+
+a b c d : ℤ
+x = a + b * 9 ^ (1/4:ℝ)
+y = c + d * 9 ^ (1/4:ℝ)
+
+then
+
+x + y = (a+c) + (b +d)* 9 ^ (1/4:ℝ)
+(a+c): ℤ
+(b+d): ℤ
+hence
+
+(x+y)∈ s
+and
+
+9 ^ (1/4:ℝ) *9 ^ (1/4:ℝ) =(3:ℤ)
+and
+
+x *y=(a*c+b*d*3)+(a*d+b*c)* 9 ^ (1/4:ℝ)
+(a*c+b*d*3): ℤ
+(a*d+b*c): ℤ
+hence
+
+(x*y)∈ s
+and hence
+
+s : subring ℝ -/
+-- Eric Wieser
+/-- The image of `zsqrtd` in `ℝ`.  -/
+@[simps]
+noncomputable def zsqrtd.to_real {d : ℤ } (h : 0 ≤ d) : ℤ√d →+* ℝ := {
+  to_fun := λ a, a.1 + a.2*real.sqrt d,
+  map_zero' := by simp,
+  map_add' := λ a b, by { simp, ring, },
+  map_one' := by simp,
+  map_mul' := λ a b, by {
+    have : (↑a.re + ↑a.im * real.sqrt d) * (↑b.re + ↑b.im * real.sqrt d) =
+             ↑a.re * ↑b.re + (↑a.re * ↑b.im + ↑a.im * ↑b.re) * real.sqrt d
+                           + ↑a.im * ↑b.im * (real.sqrt d * real.sqrt d) := by ring,
+    simp [this, real.mul_self_sqrt (int.cast_nonneg.mpr h)],
+    ring, } }
+
+-- This definition is what each question in exercise 6 is asking. No need to restate it each time
+abbreviation ex6 {α : Type*} [ring α] (s : set α) := ∃ (sr : subring α) [integral_domain sr], s = sr
+
+lemma nine_equals_3_times_3 : (9:ℝ)=(3:ℝ)*(3:ℝ) :=
 begin
-  apply exists.intro,
-  intro x,
-  split,
+  linarith,
+end
+
+lemma three_is_gt_0 : (0:ℝ) < (3:ℝ) :=
+begin
+  linarith,
+end
+
+lemma three_is_gte_0 : (0:ℝ) ≤ (3:ℝ) :=
+begin
+  linarith,
+end
+
+lemma sqrt_of_9_is_3 : (3:ℝ) = (real.sqrt (9:ℝ)) :=
+begin
+  have h1 := nine_equals_3_times_3,
+  rw h1,
+  have h2 := three_is_gte_0,
+  have h3 := real.sqrt_mul_self h2,
+  rw ← h1 at h3,
+  rw ← h1,
+  exact eq.symm h3,
+end
+
+lemma half_plus_half_equals_1: (1/2:ℝ)+(1/2:ℝ)=1 :=
+begin
+  linarith,
+end
+
+lemma x_equals_sqrtx_times_sqrtx (x:ℝ): 0 < x → x = x^(1/2:ℝ) * x^(1/2:ℝ) :=
+begin
+  intro h1,
+  have h2 := real.rpow_add h1,
+  have h3 := h2 (1/2) (1/2),
+  have h4 := half_plus_half_equals_1,
+  rw h4 at h3,
+  have h5 := real.rpow_one x,
+  rw h5 at h3,
+  exact h3,
+end
+
+lemma x_is_0 (x:ℝ) : x ≥ 0 → ¬(0 < x) → x = 0 :=
+begin
+  intro h1,
+  intro h2,
+  linarith,
+end
+
+lemma half_ne_0 : (1/2:ℝ)  ≠ (0:ℝ) :=
+begin
+  linarith,
+end
+
+lemma zero_le_0 : (0:ℝ) ≤ (0:ℝ) :=
+begin
+  linarith,
+end
+
+lemma sqrt_0_equals_0 : real.sqrt 0 = 0 :=
+begin
+  have h1 := zero_le_0,
+  exact real.sqrt_eq_zero_of_nonpos h1,
+end
+
+lemma x_gt_0_implies_sqrt_x_gt_0 (x:ℝ): x ≥ 0 → x^(1/2:ℝ) ≥ 0 :=
+begin
+  intro h1,
+  exact real.rpow_nonneg_of_nonneg h1 (1 / 2),
+end
+
+lemma sqrt_x_equals_sqrt_x (x:ℝ) : x ≥ 0 → x^(1/2:ℝ) = real.sqrt x :=
+begin
+  intro h,
+  have h1 := x_equals_sqrtx_times_sqrtx x,
+  by_cases h2 : 0 < x,
   {
-    intro h1,
-    apply exists.intro,
-    apply exists.intro,
-    sorry,
-    exact int.one,
-    exact int.one,
+    have h3 := h1 h2,
+    conv
+    begin
+      to_rhs,
+      rw h3,
+    end,
+    have h5 := x_gt_0_implies_sqrt_x_gt_0 x,
+    have h6 := h5 h,
+    have h4 := real.sqrt_mul_self h6,
+    exact eq.symm h4, 
   },
+  {
+    have h3 := x_is_0 x,
+    have h4 := h3 h,
+    have h5 := h4 h2,
+    rw h5,
+    have h6 := @real.zero_rpow (1/2:ℝ),
+    have h7 := half_ne_0,
+    have h8 := h6 h7,
+    rw h8,
+    have h9 := sqrt_0_equals_0,
+    exact eq.symm h9,
+  }
+end
+
+lemma x_mul_x_pow_y_equals_x_pow_y_plus_y (x y : ℝ) : 0 < x → (x * x)^y = x^(y+y) :=
+begin
+  intro h,
+  have h1 := le_of_lt h,
+  have h2 := @real.mul_rpow x x y h1 h1,
+  rw h2,
+  have h3 := real.rpow_add h y y,
+  exact eq.symm h3,  
+end
+
+lemma fourth_root_of_9_equals_sqrt_sqrt : (9:ℝ) ^ (1/4:ℝ) = real.sqrt (real.sqrt (9:ℝ)) :=
+begin
+  have h1 := nine_equals_3_times_3,
+  have h2 := three_is_gt_0,
+  have h7 := three_is_gte_0,
+  have h3 := sqrt_of_9_is_3,
+  rw ← h3,
+  rw h1,
+  have h4 := sqrt_x_equals_sqrt_x (3:ℝ),
+  have h5 := h4 h7,
+  rw ← h5,
+  have h6 := x_mul_x_pow_y_equals_x_pow_y_plus_y 3 (1/4),
+  have h8 := h6 h2,
+  rw h8,
+  ring,
+end
+
+lemma fourth_root_of_nine_equals_sqrt_3 : (9:ℝ) ^ (1/4:ℝ) = real.sqrt 3 := 
+begin 
+  have h1 := fourth_root_of_9_equals_sqrt_sqrt,
+  rw h1,
+  have h2 := sqrt_of_9_is_3,
+  rw h2,
+end
+
+theorem ex6e : is_an_integral_domain {x : ℝ | ∃ a b : ℤ, x = a + b * (9:ℝ) ^ (1/4:ℝ)} :=
+begin
+  refine ⟨(zsqrtd.to_real (show 0 ≤ (3 : ℤ), by norm_num)).range, _, _⟩,
+  apply_instance,
+  ext,
+  rw [fourth_root_of_nine_equals_sqrt_3],
+  simp [zsqrtd.to_real],
+  split,
   {
     intro h1,
     cases h1 with a ha,
     cases ha with b hb,
-    refine (subring.mem_mk' _ _).mpr rfl,
-    rotate,
-    rotate,
-    exact is_unit.submonoid ℝ,
-    exact add_subgroup.center ℝ,
-    rotate,
-    rotate,
-    sorry,
-    sorry,
-    sorry,
-    sorry,
+    use {re := a, im := b},
+    rw hb,
   },
+  {
+    intro h1,
+    cases h1 with y hy,
+    rw ← hy,
+    use [y.re, y.im],
+  }
 end
 
 theorem ex6f : ∃ s : subring ℚ, ∀ x : ℚ, x ∈ s ↔ ∃ n : ℕ, x.denom = 2 ^ n :=
