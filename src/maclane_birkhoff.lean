@@ -11,6 +11,8 @@ import analysis.special_functions.pow
 import data.real.irrational
 import tactic
 
+open real
+
 -- Garrett Birkhoff and Saunders Mac Lane: A survey of modern algebra, 4th ed
 
 namespace ch1A
@@ -391,7 +393,7 @@ noncomputable def zsqrtd.to_real {d : ℤ } (h : 0 ≤ d) : ℤ√d →+* ℝ :=
     ring, } }
 
 -- This definition is what each question in exercise 6 is asking. No need to restate it each time
-abbreviation ex6 {α : Type*} [ring α] (s : set α) := ∃ (sr : subring α) [integral_domain sr], s = sr
+abbreviation is_an_integral_domain {α : Type*} [ring α] (s : set α) := ∃ (sr : subring α) [integral_domain sr], s = sr
 
 lemma nine_equals_3_times_3 : (9:ℝ)=(3:ℝ)*(3:ℝ) :=
 begin
@@ -552,6 +554,46 @@ begin
     rw ← hy,
     use [y.re, y.im],
   }
+end
+
+lemma useful : ((9 : ℝ) ^ (4⁻¹ : ℝ)) * (9 ^ (4⁻¹ : ℝ)) = 3 :=
+begin
+  rw ← mul_rpow,
+  convert pow_nat_rpow_nat_inv (show (0 : ℝ) ≤ 3, by norm_num) (show 0 < 4, by norm_num) using 2,
+  all_goals {norm_num}
+end
+
+def A : subring ℝ :=
+{ carrier := {x | ∃ a b : ℤ, x = a + b * (9:ℝ) ^ (1/4:ℝ)},
+  one_mem' := ⟨1, 0, by simp⟩,
+  mul_mem' := begin
+    rintro _ _ ⟨a1, b1, rfl⟩ ⟨a2, b2, rfl⟩,
+    use [a1 * a2 + 3 * b1 * b2, a1 * b2 + a2 * b1],
+    simp [mul_add, add_mul, mul_assoc, mul_left_comm, useful],
+    ring,
+  end,
+  zero_mem' := ⟨0, 0, by simp⟩,
+  add_mem' := by { rintro _ _ ⟨a1, b1, rfl⟩ ⟨a2, b2, rfl⟩,
+                   use [a1 + a2, b1 + b2],
+                   simp, ring },
+  neg_mem' := by { rintro _ ⟨a, b, rfl⟩,
+                   use [-a, -b],
+                   simp, ring },
+   }
+
+theorem ex6e_kevin_buzzard : is_an_integral_domain {x : ℝ | ∃ a b : ℤ, x = a + b * (9:ℝ) ^ (1/4:ℝ)} :=
+⟨A, infer_instance, rfl⟩
+
+theorem ex6e_mario_carneiro : is_an_integral_domain {x : ℝ | ∃ a b : ℤ, x = a + b * (9:ℝ) ^ (1/4:ℝ)} :=
+begin
+  refine ⟨(zsqrtd.to_real (show 0 ≤ (3 : ℤ), by norm_num)).range, _, _⟩,
+  apply_instance,
+  ext,
+  rw calc (9:ℝ) ^ (1/4:ℝ) = (9:ℝ)^((2:ℕ)⁻¹ * (1/2) : ℝ) : by norm_num
+    ... = ((3^2:ℝ)^((2:ℕ)⁻¹:ℝ)) ^ (1/2:ℝ) : by rw real.rpow_mul; norm_num
+    ... = real.sqrt 3 : by rw [real.pow_nat_rpow_nat_inv, real.sqrt_eq_rpow]; norm_num,
+  simp [zsqrtd.to_real],
+  exact ⟨λ ⟨x,y,h⟩, ⟨⟨x,y⟩, h.symm⟩, λ ⟨⟨x,y⟩,h⟩, ⟨x,y, h.symm⟩⟩,
 end
 
 theorem ex6f : ∃ s : subring ℚ, ∀ x : ℚ, x ∈ s ↔ ∃ n : ℕ, x.denom = 2 ^ n :=
