@@ -1,8 +1,10 @@
 import algebra.ring.basic
+import data.rat.basic
 import data.zsqrtd.basic
 import ring_theory.subring
 import data.real.basic
 import data.nat.parity
+import data.nat.prime
 import data.pnat.basic
 import data.int.parity
 import algebra.algebra.subalgebra
@@ -10,7 +12,13 @@ import algebra.group.defs
 import analysis.special_functions.pow
 import data.real.irrational
 import tactic
+import tactic.slim_check
 
+import tactic
+
+open rat
+open nat
+open tactic
 open real
 
 -- Garrett Birkhoff and Saunders Mac Lane: A survey of modern algebra, 4th ed
@@ -596,23 +604,104 @@ begin
   exact ⟨λ ⟨x,y,h⟩, ⟨⟨x,y⟩, h.symm⟩, λ ⟨⟨x,y⟩,h⟩, ⟨x,y, h.symm⟩⟩,
 end
 
-theorem ex6f : ∃ s : subring ℚ, ∀ x : ℚ, x ∈ s ↔ ∃ n : ℕ, x.denom = 2 ^ n :=
+-- Exercise 6F
+
+lemma mul_injective 
+        {a b : ℚ}
+        {n m : ℕ}
+        (ha : a.denom = 2 ^ n)
+        (hb : b.denom = 2 ^ m):
+        ∃ k : ℕ, (a * b).denom = 2 ^ k :=
 begin
-  apply exists.intro,
-  intro h,
-  split,
-  {
-    intro h1,
-    apply exists.intro,
-    sorry,
-    sorry,
-  },
-  {
-    intro h1,
-    cases h1 with n hn,
-    exact subring.mem_top h,
-  },
+  sorry,
 end
+
+-- Mario Carneiro, Hanting Zhang
+lemma eq_two_pow_of_dvd_two_pow {a n : ℕ} : a ∣ 2 ^ n → ∃ m : ℕ, a = 2 ^ m := 
+begin
+  intro h1,
+  have h2 := (@dvd_prime_pow 2 nat.prime_two n a).1 h1,
+  cases h2 with m hm,
+  cases hm with H hH,
+  finish,
+end
+
+lemma succ_def (m: ℕ) : m.succ = m + 1 := rfl
+
+lemma pow_two_ne_zero (n : ℕ): 2^n ≠ 0 :=
+begin
+  induction n with d hd,
+  simp,
+  rw (succ_def d),
+  rw (pow_succ 2 d),
+  simp,
+  intro h,
+  finish,
+end 
+
+-- Mario Carneiro
+lemma plus_injective {a b : ℚ} {n m : ℕ} (ha : a.denom = 2 ^ n) (hb : b.denom = 2 ^ m) :
+  ∃ k : ℕ, (a + b).denom = 2 ^ k :=
+begin
+  apply @eq_two_pow_of_dvd_two_pow _ (n + m),
+  rw [rat.add_num_denom, ← int.coe_nat_mul, ha, hb, ← pow_add, ← int.coe_nat_dvd],
+  apply rat.denom_dvd,
+end 
+
+noncomputable def B : subring ℚ :=
+{ 
+  carrier := {x : ℚ | ∃ n : ℕ, x.denom = 2 ^ n },
+  one_mem' /- (1 : M) ∈ carrier) -/ := 
+  begin
+    rw set.mem_set_of_eq,
+    use 0,
+    simp,
+  end,
+  mul_mem' /- {a b} : a ∈ carrier → b ∈ carrier → a * b ∈ carrier) -/ := 
+  begin
+    intros a b h1 h2,
+    rw set.mem_set_of_eq at h1,
+    rw set.mem_set_of_eq at h2,
+    cases h1 with n hn,
+    cases h2 with m hm,
+    rw set.mem_set_of_eq,
+    exact (mul_injective hn hm),
+  end,
+  zero_mem' /- (0 : M) ∈ carrier -/ := 
+  begin
+    rw set.mem_set_of_eq,
+    use 0,
+    simp,
+    exact rfl,
+  end,
+  add_mem' /- {a b} : a ∈ carrier → b ∈ carrier → a + b ∈ carrier -/:= 
+  begin
+    intro a,
+    intro b,
+    intro h1,
+    intro h2,
+    rw set.mem_set_of_eq at h1,
+    rw set.mem_set_of_eq at h2,
+    cases h1 with n hn,
+    cases h2 with m hm,
+    rw set.mem_set_of_eq,
+    exact (plus_injective hn hm),
+  end,
+  neg_mem' /- {x} : x ∈ carrier →d -x ∈ carrier -/:= 
+  begin
+    intro x,
+    intro h1,
+    rw set.mem_set_of_eq at h1,
+    cases h1 with n hn,
+    rw set.mem_set_of_eq,
+    use n,
+    simp,
+    exact hn,
+  end,
+ }
+
+theorem ex6f : is_an_integral_domain {x : ℚ | ∃ n : ℕ, x.denom = 2 ^ n }  :=
+⟨B, infer_instance, rfl⟩
 
 end ch1B
 
