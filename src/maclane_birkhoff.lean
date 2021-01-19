@@ -606,16 +606,6 @@ end
 
 -- Exercise 6F
 
-lemma mul_injective 
-        {a b : ℚ}
-        {n m : ℕ}
-        (ha : a.denom = 2 ^ n)
-        (hb : b.denom = 2 ^ m):
-        ∃ k : ℕ, (a * b).denom = 2 ^ k :=
-begin
-  sorry,
-end
-
 -- Mario Carneiro, Hanting Zhang
 lemma eq_two_pow_of_dvd_two_pow {a n : ℕ} : a ∣ 2 ^ n → ∃ m : ℕ, a = 2 ^ m := 
 begin
@@ -647,6 +637,15 @@ begin
   rw [rat.add_num_denom, ← int.coe_nat_mul, ha, hb, ← pow_add, ← int.coe_nat_dvd],
   apply rat.denom_dvd,
 end 
+
+-- Mario Carneiro
+lemma mul_injective {a b : ℚ} {n m : ℕ} (ha : a.denom = 2 ^ n) (hb : b.denom = 2 ^ m) :
+  ∃ k : ℕ, (a * b).denom = 2 ^ k :=
+begin
+  apply @eq_two_pow_of_dvd_two_pow _ (n + m),
+  rw [rat.mul_num_denom, ha, hb, ← pow_add, ← int.coe_nat_dvd],
+  apply rat.denom_dvd,
+end
 
 noncomputable def B : subring ℚ :=
 { 
