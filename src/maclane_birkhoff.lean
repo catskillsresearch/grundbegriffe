@@ -1,20 +1,19 @@
 import algebra.ring.basic
-import data.rat.basic
-import data.zsqrtd.basic
-import ring_theory.subring
-import data.real.basic
+import algebra.algebra.subalgebra
+import algebra.group.defs
+import analysis.special_functions.pow
 import data.nat.parity
 import data.nat.prime
 import data.pnat.basic
 import data.int.parity
-import algebra.algebra.subalgebra
-import algebra.group.defs
-import analysis.special_functions.pow
+import data.zmod.basic
+import data.rat.basic
+import data.real.basic
 import data.real.irrational
+import data.zsqrtd.basic
+import ring_theory.subring
 import tactic
 import tactic.slim_check
-
-import tactic
 
 open rat
 open nat
@@ -400,7 +399,7 @@ noncomputable def zsqrtd.to_real {d : ℤ } (h : 0 ≤ d) : ℤ√d →+* ℝ :=
     simp [this, real.mul_self_sqrt (int.cast_nonneg.mpr h)],
     ring, } }
 
--- This definition is what each question in exercise 6 is asking. No need to restate it each time
+-- Eric Wieser
 abbreviation is_an_integral_domain {α : Type*} [ring α] (s : set α) := ∃ (sr : subring α) [integral_domain sr], s = sr
 
 lemma nine_equals_3_times_3 : (9:ℝ)=(3:ℝ)*(3:ℝ) :=
@@ -701,6 +700,192 @@ noncomputable def B : subring ℚ :=
 
 theorem ex6f : is_an_integral_domain {x : ℚ | ∃ n : ℕ, x.denom = 2 ^ n }  :=
 ⟨B, infer_instance, rfl⟩
+
+inductive R
+| zero
+| one
+
+open R
+
+def R.add : R → R → R
+| zero zero := zero
+| zero one := one
+| one zero := one
+| one one := zero
+
+def R.mul : R → R → R
+| zero zero := zero
+| zero one := zero
+| one zero := zero
+| one one := one
+
+def R.neg : R → R
+| zero := zero
+| one := one
+
+instance : has_add R := ⟨R.add⟩
+instance : has_mul R := ⟨R.mul⟩
+instance : has_zero R := ⟨zero⟩
+instance : has_one R := ⟨one⟩
+instance : has_neg R := ⟨R.neg⟩
+
+theorem R.exists_pair_ne : ∃ (x y : R), x ≠ y :=
+begin
+   use [R.zero, R.one],
+end
+
+theorem R.zero_add (a : R): 0 + a = a := 
+begin
+   cases a,
+   repeat { exact rfl },
+end
+
+theorem R.add_zero (a : R): a + 0 = a := 
+begin
+   cases a,
+   repeat { exact rfl },
+end
+
+theorem R.one_mul (a : R): 1 * a = a := 
+begin
+   cases a,
+   repeat { exact rfl },
+end
+
+theorem R.mul_one (a : R): a * 1 = a := 
+begin
+   cases a,
+   repeat { exact rfl },
+end
+
+theorem R.add_assoc (a b c : R): a + b + c = a + (b + c) := 
+begin
+   cases a,
+   cases b,
+   cases c,
+   repeat { exact rfl },
+   cases c,
+   repeat { exact rfl },
+   cases b,
+   cases c,
+   repeat { exact rfl },
+   cases c,
+   repeat { exact rfl },
+end
+
+theorem R.add_left_neg (a : R): -a + a = 0 := 
+begin
+   cases a,
+   repeat { exact rfl },
+end
+
+theorem R.add_comm (a b : R): a + b = b + a := 
+begin
+   cases a,
+   cases b,
+   repeat { exact rfl },
+   cases b,
+   repeat { exact rfl },
+end
+
+theorem R.mul_assoc (a b c : R): a * b * c = a * (b * c) := 
+begin
+   cases a,
+   cases b,
+   cases c,
+   repeat { exact rfl },
+   cases c,
+   repeat { exact rfl },
+   cases b,
+   cases c,
+   repeat { exact rfl },
+   cases c,
+   repeat { exact rfl },
+end
+
+
+theorem R.left_distrib (a b c : R): a * (b + c) = a * b + a * c := 
+begin
+   cases a,
+   cases b,
+   cases c,
+   repeat { exact rfl },
+   cases c,
+   repeat { exact rfl },
+   cases b,
+   cases c,
+   repeat { exact rfl },
+   cases c,
+   repeat { exact rfl },
+end
+
+theorem R.right_distrib (a b c : R): (a + b) * c = a * c + b * c := 
+begin
+   cases a,
+   cases b,
+   cases c,
+   repeat { exact rfl },
+   cases c,
+   repeat { exact rfl },
+   cases b,
+   cases c,
+   repeat { exact rfl },
+   cases c,
+   repeat { exact rfl },
+end
+
+theorem R.mul_comm (a b : R): a * b = b * a := 
+begin
+   cases a,
+   cases b,
+   repeat { exact rfl },
+   cases b,
+   repeat { exact rfl },
+end
+
+theorem R.eq_zero_or_eq_zero_of_mul_eq_zero (a b : R) (h: a * b = 0): a = 0 ∨ b = 0:=
+begin
+   cases a,
+   cases b,
+   left,
+   exact rfl,
+   left,
+   exact rfl,
+   cases b,
+   right,
+   exact rfl,
+   exfalso,
+   finish,   
+end
+
+instance ex7a_kyle_miller : integral_domain R :=
+{
+  zero := R.zero,
+  one := R.one,
+  add := R.add,
+  mul := R.mul,
+  add_assoc := R.add_assoc,
+  zero_add := R.zero_add,
+  add_zero := R.add_zero,
+  neg := R.neg,
+  add_left_neg := R.add_left_neg,
+  add_comm := R.add_comm,
+  one_mul := R.one_mul,
+  mul_assoc := R.mul_assoc,
+  mul_one := R.mul_one ,
+  left_distrib := R.left_distrib,
+  right_distrib := R.right_distrib,
+  mul_comm := R.mul_comm,
+  exists_pair_ne := R.exists_pair_ne,
+  eq_zero_or_eq_zero_of_mul_eq_zero := R.eq_zero_or_eq_zero_of_mul_eq_zero,
+}
+
+instance : fact (nat.prime 2) := nat.prime_two
+
+-- this is `@field.to_integral_domain _ (zmod.field 2)` under the hood
+instance ex7a_eric_wieser : integral_domain (zmod 2) := by apply_instance
+
+#check zmod.field
 
 end ch1B
 
