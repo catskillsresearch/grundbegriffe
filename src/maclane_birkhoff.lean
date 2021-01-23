@@ -14,7 +14,8 @@ import data.zsqrtd.basic
 import ring_theory.subring
 import tactic
 import tactic.slim_check
-
+import data.equiv.ring
+import algebra.punit_instances
 open rat
 open nat
 open tactic
@@ -885,7 +886,146 @@ instance : fact (nat.prime 2) := nat.prime_two
 -- this is `@field.to_integral_domain _ (zmod.field 2)` under the hood
 instance ex7a_eric_wieser : integral_domain (zmod 2) := by apply_instance
 
-#check zmod.field
+namespace ex7b
+
+inductive R
+| zero
+
+open R
+
+def R.add : R → R → R
+| zero zero := zero
+
+def R.mul : R → R → R
+| zero zero := zero
+
+def R.neg : R → R
+| zero := zero
+
+instance : has_add R := ⟨R.add⟩
+instance : has_mul R := ⟨R.mul⟩
+instance : has_zero R := ⟨zero⟩
+instance : has_neg R := ⟨R.neg⟩
+
+theorem R.zero_add (a : R): 0 + a = a := 
+begin
+   cases a,
+   repeat { exact rfl },
+end
+
+theorem R.add_zero (a : R): a + 0 = a := 
+begin
+   cases a,
+   repeat { exact rfl },
+end
+
+theorem R.add_assoc (a b c : R): a + b + c = a + (b + c) := 
+begin
+  cases a,
+  cases b,
+  cases c,
+  refl,
+end
+
+theorem R.add_left_neg (a : R): -a + a = 0 := 
+begin
+   cases a,
+   refl,
+end
+
+theorem R.add_comm (a b : R): a + b = b + a := 
+begin
+   cases a,
+   cases b,
+   refl,
+end
+
+theorem R.mul_assoc (a b c : R): a * b * c = a * (b * c) := 
+begin
+   cases a,
+   cases b,
+   cases c,
+   refl,
+end
+
+
+theorem R.left_distrib (a b c : R): a * (b + c) = a * b + a * c := 
+begin
+   cases a,
+   cases b,
+   cases c,
+   refl,
+end
+
+theorem R.right_distrib (a b c : R): (a + b) * c = a * c + b * c := 
+begin
+   cases a,
+   cases b,
+   cases c,
+   refl,
+end
+
+theorem R.mul_comm (a b : R): a * b = b * a := 
+begin
+   cases a,
+   cases b,
+   refl,
+end
+
+theorem R.eq_zero_or_eq_zero_of_mul_eq_zero (a b : R) (h: a * b = 0): a = 0 ∨ b = 0:=
+begin
+  cases a,
+  cases b,
+  left,
+  refl,
+end
+
+end ex7b
+
+lemma ex8a_eric_wieser {S: Type*} [CR: comm_ring S] 
+        [NZD: no_zero_divisors S] (h : (0 : S) = 1) : S ≃+* unit :=
+begin
+  refine ring_equiv.symm _,
+  refine {to_fun := _, inv_fun := _, left_inv := _, right_inv := _, map_mul' := _, map_add' := _},
+  intro h,
+  exact ring.one,
+  intro h1,
+  exact (),
+  rw function.left_inverse,
+  intro x,
+  exact unit.ext,
+  rw function.right_inverse,
+  rw function.left_inverse,
+  intro x,
+  exact eq_of_zero_eq_one h ring.one x,
+  intro u1,
+  intro u2,
+  ring,
+  exact eq_of_zero_eq_one h ring.one (ring.one * ring.one),
+  intro u1,
+  intro u2,
+  exact eq_of_zero_eq_one h ring.one (ring.one + ring.one),
+end
+
+def is_zero_ring (α : Type u) [ring α] : Prop := ∀ (x : α), x = 0
+
+lemma ex8a_kyle_miller (S : Type u) [comm_ring S] [no_zero_divisors S] :
+  is_integral_domain S ∨ is_zero_ring S :=
+begin
+  by_cases h: (1:S) ≠ (0:S),
+  fconstructor,
+  refine {exists_pair_ne := _, mul_comm := _, eq_zero_or_eq_zero_of_mul_eq_zero := _},
+  use [0,1],
+  refine ne_comm.mp _,
+  assumption,
+  exact mul_comm,
+  exact λ {a b : S}, mul_eq_zero.mp,
+  refine or.inr _,
+  rw is_zero_ring,
+  refine eq_zero_of_zero_eq_one _,
+  finish,
+end
+
 
 end ch1B
 
