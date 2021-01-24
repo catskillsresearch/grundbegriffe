@@ -702,6 +702,8 @@ noncomputable def B : subring ℚ :=
 theorem ex6f : is_an_integral_domain {x : ℚ | ∃ n : ℕ, x.denom = 2 ^ n }  :=
 ⟨B, infer_instance, rfl⟩
 
+namespace ex7A
+
 inductive R
 | zero
 | one
@@ -886,6 +888,8 @@ instance : fact (nat.prime 2) := nat.prime_two
 -- this is `@field.to_integral_domain _ (zmod.field 2)` under the hood
 instance ex7a_eric_wieser : integral_domain (zmod 2) := by apply_instance
 
+end ex7A
+
 namespace ex7b
 
 inductive R
@@ -1025,7 +1029,162 @@ begin
   refine eq_zero_of_zero_eq_one _,
   finish,
 end
+ 
+--exercise 8b: No
 
+-- exercise 9:
+
+namespace ex9
+
+structure M := Mk :: (x : ℤ)
+
+open M 
+
+def M.add (a b : M) := Mk (a.x + b.x)
+def M.mul (a b : M) := Mk 0
+def M.neg (a : M) := Mk (-a.x)
+def M.zero : M := Mk 0
+def M.one : M := Mk 1
+
+instance : has_add M := ⟨M.add⟩
+instance : has_mul M := ⟨M.mul⟩
+instance : has_zero M := ⟨M.zero⟩
+instance : has_one M := ⟨M.one⟩
+instance : has_neg M := ⟨M.neg⟩
+
+@[ext] lemma ext (a b : M) : a.x = b.x → a = b := -- Yakov Pechersky
+by cases a; cases b; simp
+
+theorem M.zero_add (a : M): (0:M) + a = a := 
+begin
+  ext,
+  cases a,
+  unfold has_zero.zero,
+  rw M.zero,
+  unfold has_add.add,
+  rw M.add,
+  simp [int.zero_add],
+end
+
+theorem M.exists_pair_ne : ∃ (x y : M), x ≠ y :=
+begin
+   use [M.zero, M.one],
+   rw [M.zero, M.one],
+   simp,
+end
+
+theorem M.add_zero (a : M): a + 0 = a := 
+begin
+  ext,
+  cases a,
+  unfold has_zero.zero,
+  rw M.zero,
+  unfold has_add.add,
+  rw M.add,
+  simp [int.zero_add],
+end
+
+theorem M.add_assoc (a b c : M): a + b + c = a + (b + c) := 
+begin
+  cases a;
+  cases b;
+  cases c;
+  unfold has_add.add,
+  repeat { rw M.add },
+  finish,
+end
+
+theorem M.add_left_neg (a : M): -a + a = 0 := 
+begin
+  cases a,
+  unfold has_neg.neg,
+  unfold has_add.add,
+  rw M.neg,
+  rw M.add,
+  finish,
+end
+
+theorem M.add_comm (a b : M): a + b = b + a := 
+begin
+  cases a;
+  cases b;
+  unfold has_add.add,
+  repeat { rw M.add },
+  finish,
+end
+
+theorem M.mul_assoc (a b c : M): a * b * c = a * (b * c) := 
+begin
+  cases a;
+  cases b;
+  cases c;
+  unfold has_mul.mul,
+  repeat { rw M.mul },
+end
+
+
+theorem M.left_distrib (a b c : M): a * (b + c) = a * b + a * c := 
+begin
+  cases a;
+  cases b;
+  cases c;
+  unfold has_mul.mul,
+  unfold has_add.add,
+  repeat { rw M.add },
+  repeat { rw M.mul },
+  finish,
+end
+
+theorem M.right_distrib (a b c : M): (a + b) * c = a * c + b * c := 
+begin
+  cases a;
+  cases b;
+  cases c;
+  unfold has_mul.mul,
+  unfold has_add.add,
+  repeat { rw M.add },
+  repeat { rw M.mul },
+  finish,
+end
+
+theorem M.mul_comm (a b : M): a * b = b * a := 
+begin
+  cases a;
+  cases b;
+  unfold has_mul.mul,
+  repeat { rw M.mul },
+end
+
+  
+lemma M.not_one_mul_or_mul_one: (1:M) * (1:M) ≠ (1:M):=
+begin
+  unfold has_one.one,
+  unfold has_mul.mul,
+  rw M.one,
+  rw M.mul,
+  finish,
+end
+
+lemma M.not_eq_zero_or_eq_zero_of_mul_eq_zero : ¬∀ (a b : M), a * b = (0:M) → (a = (0:M) ∨ b = (0:M)) :=
+begin
+  unfold has_mul.mul,
+  unfold has_zero.zero,
+  rw M.zero,
+  simp at *,
+  use (1:M),
+  use (1:M),
+  rw M.mul,
+  split,
+  simp,
+  intro h,
+  simp at *,
+  unfold has_one.one at h,
+  rw M.one at h,
+  simp at h,
+  assumption,
+end 
+
+end ex9
 
 end ch1B
 
